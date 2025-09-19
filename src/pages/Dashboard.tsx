@@ -3,8 +3,9 @@ import { Navbar } from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { DollarSign, TrendingUp, Users, Calendar, Download, Bot, Save, RefreshCw } from "lucide-react";
+import { DollarSign, TrendingUp, Users, Calendar, Download, Bot, Save, RefreshCw, Sparkles, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
@@ -14,13 +15,32 @@ export default function Dashboard() {
   const [teamSize, setTeamSize] = useState([25]);
   const [growthRate, setGrowthRate] = useState([15]);
   const [scenarioCount, setScenarioCount] = useState(1);
+  const [currency, setCurrency] = useState("INR");
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   
-  // Calculate metrics
-  const monthlyRevenue = 50000 + (pricingModel[0] * 1000) + (growthRate[0] * 2000);
-  const monthlyExpenses = 30000 + (marketingSpend[0] * 500) + (teamSize[0] * 4000);
+  // Currency conversion rates (base INR)
+  const currencyRates = {
+    INR: { symbol: "₹", rate: 1, locale: "en-IN" },
+    USD: { symbol: "$", rate: 0.012, locale: "en-US" },
+    EUR: { symbol: "€", rate: 0.011, locale: "de-DE" },
+    GBP: { symbol: "£", rate: 0.0096, locale: "en-GB" },
+  };
+  
+  const formatCurrency = (amount: number) => {
+    const { symbol, rate, locale } = currencyRates[currency as keyof typeof currencyRates];
+    const convertedAmount = amount * rate;
+    if (currency === "INR") {
+      return `${symbol}${(convertedAmount / 1000).toFixed(0)}k`;
+    }
+    return `${symbol}${(convertedAmount / 1000).toFixed(0)}k`;
+  };
+  
+  // Calculate metrics (in INR base)
+  const monthlyRevenue = 4000000 + (pricingModel[0] * 80000) + (growthRate[0] * 160000);
+  const monthlyExpenses = 2400000 + (marketingSpend[0] * 40000) + (teamSize[0] * 320000);
   const netIncome = monthlyRevenue - monthlyExpenses;
-  const runway = Math.max(0, Math.floor(1500000 / Math.max(1, monthlyExpenses - monthlyRevenue)));
-  const growthPercentage = ((monthlyRevenue - 50000) / 50000 * 100).toFixed(1);
+  const runway = Math.max(0, Math.floor(120000000 / Math.max(1, monthlyExpenses - monthlyRevenue)));
+  const growthPercentage = ((monthlyRevenue - 4000000) / 4000000 * 100).toFixed(1);
   
   // Chart data
   const revenueData = [
@@ -39,11 +59,11 @@ export default function Dashboard() {
   ];
   
   const departmentData = [
-    { name: "Engineering", value: teamSize[0] * 3000, color: "hsl(var(--primary))" },
-    { name: "Marketing", value: marketingSpend[0] * 500, color: "hsl(var(--accent))" },
-    { name: "Sales", value: pricingModel[0] * 300, color: "hsl(var(--success))" },
-    { name: "Operations", value: 15000, color: "hsl(var(--warning))" },
-    { name: "Other", value: 10000, color: "hsl(var(--secondary))" },
+    { name: "Engineering", value: teamSize[0] * 240000, color: "hsl(var(--primary))" },
+    { name: "Marketing", value: marketingSpend[0] * 40000, color: "hsl(var(--accent))" },
+    { name: "Sales", value: pricingModel[0] * 24000, color: "hsl(var(--success))" },
+    { name: "Operations", value: 1200000, color: "hsl(var(--warning))" },
+    { name: "Other", value: 800000, color: "hsl(var(--secondary))" },
   ];
   
   const handleSaveScenario = () => {
@@ -62,9 +82,33 @@ export default function Dashboard() {
   };
   
   const handleAIAnalysis = () => {
+    // Generate AI suggestions based on current parameters
+    const suggestions = [];
+    
+    if (marketingSpend[0] > 100) {
+      suggestions.push("Consider reducing marketing spend by 20% to improve cash flow");
+    }
+    if (teamSize[0] > 40) {
+      suggestions.push("Your team size is above optimal. Consider phased hiring to extend runway");
+    }
+    if (growthRate[0] < 20) {
+      suggestions.push("Focus on growth initiatives to achieve 20%+ monthly growth rate");
+    }
+    if (netIncome < 0) {
+      suggestions.push("Warning: Negative cash flow detected. Adjust pricing or reduce expenses");
+    }
+    if (runway < 12) {
+      suggestions.push("Runway is below 12 months. Consider fundraising or cost optimization");
+    }
+    if (suggestions.length === 0) {
+      suggestions.push("Your financial metrics look healthy! Consider scaling marketing for growth");
+    }
+    
+    setAiSuggestions(suggestions);
+    
     toast({
-      title: "AI Analysis Started",
-      description: "Generating intelligent insights for your scenario...",
+      title: "AI Analysis Complete",
+      description: `Generated ${suggestions.length} intelligent insights for your scenario.`,
     });
   };
   
@@ -74,10 +118,26 @@ export default function Dashboard() {
       
       <main className="pt-20 pb-8 px-4">
         <div className="container mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Financial Dashboard</h1>
-            <p className="text-muted-foreground">Real-time financial planning and forecasting</p>
+          {/* Header with Currency Selector */}
+          <div className="mb-8 flex justify-between items-start">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Financial Dashboard</h1>
+              <p className="text-muted-foreground">Real-time financial planning and forecasting</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-muted-foreground" />
+              <Select value={currency} onValueChange={setCurrency}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="INR">₹ INR</SelectItem>
+                  <SelectItem value="USD">$ USD</SelectItem>
+                  <SelectItem value="EUR">€ EUR</SelectItem>
+                  <SelectItem value="GBP">£ GBP</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           
           {/* Metrics Cards */}
@@ -89,7 +149,7 @@ export default function Dashboard() {
                 </div>
                 <span className="text-sm text-success font-medium">+{growthPercentage}%</span>
               </div>
-              <p className="text-2xl font-bold">${(monthlyRevenue / 1000).toFixed(0)}k</p>
+              <p className="text-2xl font-bold">{formatCurrency(monthlyRevenue)}</p>
               <p className="text-sm text-muted-foreground">Monthly Revenue</p>
             </Card>
             
@@ -100,7 +160,8 @@ export default function Dashboard() {
                 </div>
                 <span className="text-sm text-muted-foreground">Per month</span>
               </div>
-              <p className="text-2xl font-bold">${(monthlyExpenses / 1000).toFixed(0)}k</p>
+              <p className="text-2xl font-bold">{formatCurrency(monthlyExpenses)}</p>
+              <p className="text-sm text-muted-foreground">Monthly Expenses</p>
               <p className="text-sm text-muted-foreground">Monthly Expenses</p>
             </Card>
             
@@ -139,7 +200,7 @@ export default function Dashboard() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <label className="text-sm font-medium">Marketing Spend</label>
-                      <span className="text-sm text-muted-foreground">${marketingSpend[0]}k</span>
+                      <span className="text-sm text-muted-foreground">{formatCurrency(marketingSpend[0] * 1000)}</span>
                     </div>
                     <Slider
                       value={marketingSpend}
@@ -153,7 +214,7 @@ export default function Dashboard() {
                   <div>
                     <div className="flex justify-between mb-2">
                       <label className="text-sm font-medium">Pricing Model</label>
-                      <span className="text-sm text-muted-foreground">${pricingModel[0]}/user</span>
+                      <span className="text-sm text-muted-foreground">{formatCurrency(pricingModel[0] * 100)}/user</span>
                     </div>
                     <Slider
                       value={pricingModel}
@@ -227,13 +288,13 @@ export default function Dashboard() {
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Net Income</span>
                     <span className={`text-sm font-medium ${netIncome > 0 ? 'text-success' : 'text-destructive'}`}>
-                      ${(netIncome / 1000).toFixed(1)}k
+                      {formatCurrency(netIncome)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Burn Rate</span>
                     <span className="text-sm font-medium">
-                      ${((monthlyExpenses - monthlyRevenue) / 1000).toFixed(1)}k
+                      {formatCurrency(Math.abs(monthlyExpenses - monthlyRevenue))}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -248,6 +309,24 @@ export default function Dashboard() {
                   </div>
                 </div>
               </Card>
+              
+              {/* AI Suggestions Panel */}
+              {aiSuggestions.length > 0 && (
+                <Card className="p-6 glass-card">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    <h3 className="text-lg font-semibold">AI Insights</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {aiSuggestions.map((suggestion, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
+                        <p className="text-sm text-muted-foreground">{suggestion}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
             </div>
             
             {/* Charts */}

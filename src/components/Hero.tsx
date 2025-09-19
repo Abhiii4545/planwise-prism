@@ -44,7 +44,7 @@ export function Hero() {
           {/* Main heading */}
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
             Smart Financial
-            <span className="text-gradient block">Forecasting Made Simple</span>
+            <span className="block text-primary">Forecasting Made Simple</span>
           </h1>
           
           {/* Description */}
@@ -53,17 +53,14 @@ export function Hero() {
             and intelligent forecasting. Make data-driven decisions with confidence.
           </p>
           
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-slide-up" style={{ animationDelay: "0.4s" }}>
+          {/* CTA Button - Single button only */}
+          <div className="flex justify-center mb-12 animate-slide-up" style={{ animationDelay: "0.4s" }}>
             <Link to="/dashboard">
-              <Button variant="gradient" size="xl" className="w-full sm:w-auto">
+              <Button variant="gradient" size="xl">
                 Start Free Trial
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Button variant="glass" size="xl" className="w-full sm:w-auto">
-              Watch Demo
-            </Button>
           </div>
           
           {/* Stats */}
