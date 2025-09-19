@@ -18,9 +18,9 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 gradient-subtle" />
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-white">
+      {/* Background - pure white */}
+      <div className="absolute inset-0 bg-white" />
       
       {/* Floating elements */}
       <div className="absolute top-20 left-10 animate-float">
