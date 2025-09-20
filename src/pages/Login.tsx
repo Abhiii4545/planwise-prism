@@ -14,6 +14,8 @@ export default function Login() {
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Set signed in state
+    localStorage.setItem("isSignedIn", "true");
     toast({
       title: "Welcome back!",
       description: "Redirecting to dashboard...",

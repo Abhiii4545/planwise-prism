@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { DollarSign, TrendingUp, Users, Calendar, Download, Bot, Save, RefreshCw, Sparkles, Globe } from "lucide-react";
+import { DollarSign, TrendingUp, Users, Calendar, Download, Save, RefreshCw, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AIChatbot } from "@/components/AIChatbot";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -16,7 +17,6 @@ export default function Dashboard() {
   const [growthRate, setGrowthRate] = useState([15]);
   const [scenarioCount, setScenarioCount] = useState(1);
   const [currency, setCurrency] = useState("INR");
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   
   // Currency conversion rates (base INR)
   const currencyRates = {
@@ -81,36 +81,6 @@ export default function Dashboard() {
     });
   };
   
-  const handleAIAnalysis = () => {
-    // Generate AI suggestions based on current parameters
-    const suggestions = [];
-    
-    if (marketingSpend[0] > 100) {
-      suggestions.push("Consider reducing marketing spend by 20% to improve cash flow");
-    }
-    if (teamSize[0] > 40) {
-      suggestions.push("Your team size is above optimal. Consider phased hiring to extend runway");
-    }
-    if (growthRate[0] < 20) {
-      suggestions.push("Focus on growth initiatives to achieve 20%+ monthly growth rate");
-    }
-    if (netIncome < 0) {
-      suggestions.push("Warning: Negative cash flow detected. Adjust pricing or reduce expenses");
-    }
-    if (runway < 12) {
-      suggestions.push("Runway is below 12 months. Consider fundraising or cost optimization");
-    }
-    if (suggestions.length === 0) {
-      suggestions.push("Your financial metrics look healthy! Consider scaling marketing for growth");
-    }
-    
-    setAiSuggestions(suggestions);
-    
-    toast({
-      title: "AI Analysis Complete",
-      description: `Generated ${suggestions.length} intelligent insights for your scenario.`,
-    });
-  };
   
   return (
     <div className="min-h-screen bg-background">
@@ -264,14 +234,6 @@ export default function Dashboard() {
                     Save Scenario
                   </Button>
                   <Button 
-                    variant="secondary" 
-                    className="w-full"
-                    onClick={handleAIAnalysis}
-                  >
-                    <Bot className="w-4 h-4 mr-2" />
-                    AI Analysis
-                  </Button>
-                  <Button 
                     variant="outline" 
                     className="w-full"
                     onClick={handleGenerateReport}
@@ -310,23 +272,21 @@ export default function Dashboard() {
                 </div>
               </Card>
               
-              {/* AI Suggestions Panel */}
-              {aiSuggestions.length > 0 && (
-                <Card className="p-6 glass-card">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    <h3 className="text-lg font-semibold">AI Insights</h3>
-                  </div>
-                  <div className="space-y-2">
-                    {aiSuggestions.map((suggestion, index) => (
-                      <div key={index} className="flex items-start gap-2">
-                        <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
-                        <p className="text-sm text-muted-foreground">{suggestion}</p>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              )}
+              {/* AI Chatbot */}
+              <div className="h-[500px]">
+                <AIChatbot 
+                  metrics={{
+                    monthlyRevenue,
+                    monthlyExpenses,
+                    netIncome,
+                    runway,
+                    teamSize: teamSize[0],
+                    marketingSpend: marketingSpend[0],
+                    growthRate: growthRate[0],
+                  }}
+                  formatCurrency={formatCurrency}
+                />
+              </div>
             </div>
             
             {/* Charts */}
