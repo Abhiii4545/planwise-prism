@@ -74,7 +74,7 @@ export default function Login() {
         <p className="text-center mt-6 text-sm text-muted-foreground">
           Don't have an account?{" "}
           <Link to="/dashboard" className="text-primary hover:underline">
-            Start free trial
+            Start Now
           </Link>
         </p>
       </Card>
